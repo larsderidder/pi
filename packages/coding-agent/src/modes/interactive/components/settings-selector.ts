@@ -259,6 +259,13 @@ export class SettingsSelectorComponent extends Container {
 				values: ["true", "false"],
 			},
 			{
+				id: "show-message-timestamps",
+				label: "Message timestamps",
+				description: "Show timestamps above user and assistant messages",
+				currentValue: config.showMessageTimestamps ? "true" : "false",
+				values: ["true", "false"],
+			},
+			{
 				id: "collapse-changelog",
 				label: "Collapse changelog",
 				description: "Show condensed changelog after updates",
@@ -409,19 +416,9 @@ export class SettingsSelectorComponent extends Container {
 			values: ["true", "false"],
 		});
 
-		// Message timestamps toggle (insert after skill-commands)
+		// Hardware cursor toggle (insert after skill-commands)
 		const skillCommandsIndex = items.findIndex((item) => item.id === "skill-commands");
 		items.splice(skillCommandsIndex + 1, 0, {
-			id: "show-message-timestamps",
-			label: "Message timestamps",
-			description: "Show timestamps above user and assistant messages",
-			currentValue: config.showMessageTimestamps ? "true" : "false",
-			values: ["true", "false"],
-		});
-
-		// Hardware cursor toggle (insert after message timestamps)
-		const messageTimestampsIndex = items.findIndex((item) => item.id === "show-message-timestamps");
-		items.splice(messageTimestampsIndex + 1, 0, {
 			id: "show-hardware-cursor",
 			label: "Show hardware cursor",
 			description: "Show the terminal cursor while still positioning it for IME support",
