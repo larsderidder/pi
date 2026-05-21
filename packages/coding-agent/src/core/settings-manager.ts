@@ -104,6 +104,7 @@ export interface Settings {
 	enabledModels?: string[]; // Model patterns for cycling (same format as --models CLI flag)
 	doubleEscapeAction?: "fork" | "tree" | "none"; // Action for double-escape with empty editor (default: "tree")
 	treeFilterMode?: "default" | "no-tools" | "user-only" | "labeled-only" | "all"; // Default filter when opening /tree
+	showMessageTimestamps?: boolean; // Show timestamps above user and assistant messages
 	thinkingBudgets?: ThinkingBudgetsSettings; // Custom token budgets for thinking levels
 	editorPaddingX?: number; // Horizontal padding for input editor (default: 0)
 	autocompleteMaxVisible?: number; // Max visible items in autocomplete dropdown (default: 5)
@@ -1051,6 +1052,16 @@ export class SettingsManager {
 	setShowHardwareCursor(enabled: boolean): void {
 		this.globalSettings.showHardwareCursor = enabled;
 		this.markModified("showHardwareCursor");
+		this.save();
+	}
+
+	getShowMessageTimestamps(): boolean {
+		return this.settings.showMessageTimestamps ?? false;
+	}
+
+	setShowMessageTimestamps(enabled: boolean): void {
+		this.globalSettings.showMessageTimestamps = enabled;
+		this.markModified("showMessageTimestamps");
 		this.save();
 	}
 

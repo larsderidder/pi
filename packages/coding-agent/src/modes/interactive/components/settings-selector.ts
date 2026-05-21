@@ -51,6 +51,7 @@ export interface SettingsConfig {
 	enableInstallTelemetry: boolean;
 	doubleEscapeAction: "fork" | "tree" | "none";
 	treeFilterMode: "default" | "no-tools" | "user-only" | "labeled-only" | "all";
+	showMessageTimestamps: boolean;
 	showHardwareCursor: boolean;
 	editorPaddingX: number;
 	autocompleteMaxVisible: number;
@@ -79,6 +80,7 @@ export interface SettingsCallbacks {
 	onEnableInstallTelemetryChange: (enabled: boolean) => void;
 	onDoubleEscapeActionChange: (action: "fork" | "tree" | "none") => void;
 	onTreeFilterModeChange: (mode: "default" | "no-tools" | "user-only" | "labeled-only" | "all") => void;
+	onShowMessageTimestampsChange: (enabled: boolean) => void;
 	onShowHardwareCursorChange: (enabled: boolean) => void;
 	onEditorPaddingXChange: (padding: number) => void;
 	onAutocompleteMaxVisibleChange: (maxVisible: number) => void;
@@ -407,9 +409,19 @@ export class SettingsSelectorComponent extends Container {
 			values: ["true", "false"],
 		});
 
-		// Hardware cursor toggle (insert after skill-commands)
+		// Message timestamps toggle (insert after skill-commands)
 		const skillCommandsIndex = items.findIndex((item) => item.id === "skill-commands");
 		items.splice(skillCommandsIndex + 1, 0, {
+			id: "show-message-timestamps",
+			label: "Message timestamps",
+			description: "Show timestamps above user and assistant messages",
+			currentValue: config.showMessageTimestamps ? "true" : "false",
+			values: ["true", "false"],
+		});
+
+		// Hardware cursor toggle (insert after message timestamps)
+		const messageTimestampsIndex = items.findIndex((item) => item.id === "show-message-timestamps");
+		items.splice(messageTimestampsIndex + 1, 0, {
 			id: "show-hardware-cursor",
 			label: "Show hardware cursor",
 			description: "Show the terminal cursor while still positioning it for IME support",
@@ -519,6 +531,9 @@ export class SettingsSelectorComponent extends Container {
 						callbacks.onTreeFilterModeChange(
 							newValue as "default" | "no-tools" | "user-only" | "labeled-only" | "all",
 						);
+						break;
+					case "show-message-timestamps":
+						callbacks.onShowMessageTimestampsChange(newValue === "true");
 						break;
 					case "show-hardware-cursor":
 						callbacks.onShowHardwareCursorChange(newValue === "true");

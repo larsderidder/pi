@@ -1,5 +1,6 @@
 import { Box, Container, Markdown, type MarkdownTheme } from "@earendil-works/pi-tui";
 import { getMarkdownTheme, theme } from "../theme/theme.ts";
+import { createMessageTimestamp } from "./message-timestamp.ts";
 
 const OSC133_ZONE_START = "\x1b]133;A\x07";
 const OSC133_ZONE_END = "\x1b]133;B\x07";
@@ -11,9 +12,17 @@ const OSC133_ZONE_FINAL = "\x1b]133;C\x07";
 export class UserMessageComponent extends Container {
 	private contentBox: Box;
 
-	constructor(text: string, markdownTheme: MarkdownTheme = getMarkdownTheme()) {
+	constructor(
+		text: string,
+		markdownTheme: MarkdownTheme = getMarkdownTheme(),
+		options: { showTimestamp?: boolean; timestamp?: number | string } = {},
+	) {
 		super();
 		this.contentBox = new Box(1, 1, (content: string) => theme.bg("userMessageBg", content));
+		const timestamp = options.showTimestamp ? createMessageTimestamp(options.timestamp, 0) : undefined;
+		if (timestamp) {
+			this.contentBox.addChild(timestamp);
+		}
 		this.contentBox.addChild(
 			new Markdown(text, 0, 0, markdownTheme, {
 				color: (content: string) => theme.fg("userMessageText", content),

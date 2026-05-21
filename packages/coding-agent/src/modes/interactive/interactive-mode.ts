@@ -284,6 +284,7 @@ export class InteractiveMode {
 
 	// Thinking block visibility state
 	private hideThinkingBlock = false;
+	private showMessageTimestamps = false;
 
 	// Skill commands: command name -> skill file path
 	private skillCommands = new Map<string, string>();
@@ -389,8 +390,9 @@ export class InteractiveMode {
 		this.footer = new FooterComponent(this.session, this.footerDataProvider);
 		this.footer.setAutoCompactEnabled(this.session.autoCompactionEnabled);
 
-		// Load hide thinking block setting
+		// Load display settings
 		this.hideThinkingBlock = this.settingsManager.getHideThinkingBlock();
+		this.showMessageTimestamps = this.settingsManager.getShowMessageTimestamps();
 
 		// Register themes from resource loader and initialize
 		setRegisteredThemes(this.session.resourceLoader.getThemes().themes);
@@ -1572,6 +1574,7 @@ export class InteractiveMode {
 		this.footer.setAutoCompactEnabled(this.session.autoCompactionEnabled);
 		this.footerDataProvider.setCwd(this.sessionManager.getCwd());
 		this.hideThinkingBlock = this.settingsManager.getHideThinkingBlock();
+		this.showMessageTimestamps = this.settingsManager.getShowMessageTimestamps();
 		this.ui.setShowHardwareCursor(this.settingsManager.getShowHardwareCursor());
 		this.ui.setClearOnShrink(this.settingsManager.getClearOnShrink());
 		const editorPaddingX = this.settingsManager.getEditorPaddingX();
@@ -2713,6 +2716,7 @@ export class InteractiveMode {
 						this.hideThinkingBlock,
 						this.getMarkdownThemeWithSettings(),
 						this.hiddenThinkingLabel,
+						{ showTimestamp: this.showMessageTimestamps },
 					);
 					this.streamingMessage = event.message;
 					this.chatContainer.addChild(this.streamingComponent);
@@ -3081,11 +3085,15 @@ export class InteractiveMode {
 							const userComponent = new UserMessageComponent(
 								skillBlock.userMessage,
 								this.getMarkdownThemeWithSettings(),
+								{ showTimestamp: this.showMessageTimestamps, timestamp: message.timestamp },
 							);
 							this.chatContainer.addChild(userComponent);
 						}
 					} else {
-						const userComponent = new UserMessageComponent(textContent, this.getMarkdownThemeWithSettings());
+						const userComponent = new UserMessageComponent(textContent, this.getMarkdownThemeWithSettings(), {
+							showTimestamp: this.showMessageTimestamps,
+							timestamp: message.timestamp,
+						});
 						this.chatContainer.addChild(userComponent);
 					}
 					if (options?.populateHistory) {
@@ -3100,6 +3108,7 @@ export class InteractiveMode {
 					this.hideThinkingBlock,
 					this.getMarkdownThemeWithSettings(),
 					this.hiddenThinkingLabel,
+					{ showTimestamp: this.showMessageTimestamps },
 				);
 				this.chatContainer.addChild(assistantComponent);
 				break;
@@ -3858,6 +3867,7 @@ export class InteractiveMode {
 					enableInstallTelemetry: this.settingsManager.getEnableInstallTelemetry(),
 					doubleEscapeAction: this.settingsManager.getDoubleEscapeAction(),
 					treeFilterMode: this.settingsManager.getTreeFilterMode(),
+					showMessageTimestamps: this.settingsManager.getShowMessageTimestamps(),
 					showHardwareCursor: this.settingsManager.getShowHardwareCursor(),
 					editorPaddingX: this.settingsManager.getEditorPaddingX(),
 					autocompleteMaxVisible: this.settingsManager.getAutocompleteMaxVisible(),
@@ -3957,6 +3967,12 @@ export class InteractiveMode {
 					},
 					onTreeFilterModeChange: (mode) => {
 						this.settingsManager.setTreeFilterMode(mode);
+					},
+					onShowMessageTimestampsChange: (enabled) => {
+						this.showMessageTimestamps = enabled;
+						this.settingsManager.setShowMessageTimestamps(enabled);
+						this.chatContainer.clear();
+						this.rebuildChatFromMessages();
 					},
 					onShowHardwareCursorChange: (enabled) => {
 						this.settingsManager.setShowHardwareCursor(enabled);
@@ -4907,6 +4923,7 @@ export class InteractiveMode {
 			}
 			setRegisteredThemes(this.session.resourceLoader.getThemes().themes);
 			this.hideThinkingBlock = this.settingsManager.getHideThinkingBlock();
+			this.showMessageTimestamps = this.settingsManager.getShowMessageTimestamps();
 			const themeName = this.settingsManager.getTheme();
 			const themeResult = themeName ? setTheme(themeName, true) : { success: true };
 			if (!themeResult.success) {
