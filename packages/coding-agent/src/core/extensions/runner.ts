@@ -36,6 +36,7 @@ import type {
 	InputSource,
 	MessageEndEvent,
 	MessageEndEventResult,
+	MessageRenderDecorator,
 	MessageRenderer,
 	ProviderConfig,
 	RegisteredCommand,
@@ -507,6 +508,10 @@ export class ExtensionRunner {
 			}
 		}
 		return undefined;
+	}
+
+	getMessageDecorators(): MessageRenderDecorator[] {
+		return this.extensions.flatMap((extension) => extension.messageDecorators);
 	}
 
 	private resolveRegisteredCommands(): ResolvedCommand[] {

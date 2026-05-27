@@ -1054,6 +1054,12 @@ export type MessageRenderer<T = unknown> = (
 	theme: Theme,
 ) => Component | undefined;
 
+export type MessageRenderDecorator = (
+	message: AgentMessage,
+	options: MessageRenderOptions,
+	theme: Theme,
+) => Component | undefined;
+
 // ============================================================================
 // Command Registration
 // ============================================================================
@@ -1169,6 +1175,14 @@ export interface ExtensionAPI {
 
 	/** Register a custom renderer for CustomMessageEntry. */
 	registerMessageRenderer<T = unknown>(customType: string, renderer: MessageRenderer<T>): void;
+
+	/**
+	 * Register a decorator rendered before built-in transcript messages in interactive mode.
+	 * Decorators run when a message is added to the transcript or when the chat is rebuilt.
+	 * They do not replace the built-in message renderer and do not run on every streaming update.
+	 * Return undefined to skip a message. Throwing decorators are ignored.
+	 */
+	registerMessageDecorator(decorator: MessageRenderDecorator): void;
 
 	// =========================================================================
 	// Actions
@@ -1542,6 +1556,7 @@ export interface Extension {
 	handlers: Map<string, HandlerFn[]>;
 	tools: Map<string, RegisteredTool>;
 	messageRenderers: Map<string, MessageRenderer>;
+	messageDecorators: MessageRenderDecorator[];
 	commands: Map<string, RegisteredCommand>;
 	flags: Map<string, ExtensionFlag>;
 	shortcuts: Map<KeyId, ExtensionShortcut>;

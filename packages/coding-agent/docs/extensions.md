@@ -1441,6 +1441,19 @@ mode and would not execute if sent via `prompt`.
 
 Register a custom TUI renderer for messages with your `customType`. See [Custom UI](#custom-ui).
 
+### pi.registerMessageDecorator(decorator)
+
+Register a TUI component rendered before built-in transcript messages in interactive mode. The decorator receives the message, render options, and active theme. Decorators run when a message is added to the transcript or when the chat is rebuilt. They do not replace the built-in message renderer and do not run on every streaming update. Return `undefined` to skip rendering for a message. Throwing decorators are ignored.
+
+```typescript
+import { Text } from "@earendil-works/pi-tui";
+
+pi.registerMessageDecorator((message, _options, theme) => {
+  if (message.role !== "user" && message.role !== "assistant") return undefined;
+  return new Text(theme.fg("dim", new Date(message.timestamp).toLocaleString()), 0, 0);
+});
+```
+
 ### pi.registerShortcut(shortcut, options)
 
 Register a keyboard shortcut. See [keybindings.md](keybindings.md) for the shortcut format and built-in keybindings.

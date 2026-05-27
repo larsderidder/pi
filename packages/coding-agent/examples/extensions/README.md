@@ -109,6 +109,7 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 | Extension | Description |
 |-----------|-------------|
 | `message-renderer.ts` | Custom message rendering with colors and expandable details via `registerMessageRenderer` |
+| `message-timestamps.ts` | Decorates built-in user and assistant messages with timestamps via `registerMessageDecorator` |
 | `event-bus.ts` | Inter-extension communication via `pi.events` |
 
 ### Session Metadata

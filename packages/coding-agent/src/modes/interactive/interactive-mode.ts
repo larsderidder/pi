@@ -2708,6 +2708,7 @@ export class InteractiveMode {
 					this.updatePendingMessagesDisplay();
 					this.ui.requestRender();
 				} else if (event.message.role === "assistant") {
+					this.addMessageDecorators(event.message);
 					this.streamingComponent = new AssistantMessageComponent(
 						undefined,
 						this.hideThinkingBlock,
@@ -3022,7 +3023,23 @@ export class InteractiveMode {
 		this.ui.requestRender();
 	}
 
+	private addMessageDecorators(message: AgentMessage): void {
+		for (const decorator of this.session.extensionRunner.getMessageDecorators()) {
+			try {
+				const component = decorator(message, { expanded: this.toolOutputExpanded }, theme);
+				if (component) {
+					this.chatContainer.addChild(component);
+				}
+			} catch {
+				// Ignore renderer errors, same as custom message and tool renderers.
+			}
+		}
+	}
+
 	private addMessageToChat(message: AgentMessage, options?: { populateHistory?: boolean }): void {
+		if (message.role !== "toolResult" && (message.role !== "custom" || message.display)) {
+			this.addMessageDecorators(message);
+		}
 		switch (message.role) {
 			case "bashExecution": {
 				const component = new BashExecutionComponent(message.command, this.ui, message.excludeFromContext);

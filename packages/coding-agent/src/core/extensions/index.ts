@@ -91,6 +91,7 @@ export type {
 	// Events - Message
 	MessageEndEvent,
 	// Message Rendering
+	MessageRenderDecorator,
 	MessageRenderer,
 	MessageRenderOptions,
 	MessageStartEvent,

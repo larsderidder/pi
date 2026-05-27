@@ -234,6 +234,11 @@ function createExtensionAPI(
 			extension.messageRenderers.set(customType, renderer as MessageRenderer);
 		},
 
+		registerMessageDecorator(decorator): void {
+			runtime.assertActive();
+			extension.messageDecorators.push(decorator);
+		},
+
 		// Flag access - checks extension registered it, reads from runtime
 		getFlag(name: string): boolean | string | undefined {
 			runtime.assertActive();
@@ -359,6 +364,7 @@ function createExtension(extensionPath: string, resolvedPath: string): Extension
 		handlers: new Map(),
 		tools: new Map(),
 		messageRenderers: new Map(),
+		messageDecorators: [],
 		commands: new Map(),
 		flags: new Map(),
 		shortcuts: new Map(),

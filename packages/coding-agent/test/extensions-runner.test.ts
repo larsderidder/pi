@@ -489,6 +489,20 @@ describe("ExtensionRunner", () => {
 			const missing = runner.getMessageRenderer("not-exists");
 			expect(missing).toBeUndefined();
 		});
+
+		it("collects message decorators", async () => {
+			const extCode = `
+				export default function(pi) {
+					pi.registerMessageDecorator(() => undefined);
+				}
+			`;
+			fs.writeFileSync(path.join(extensionsDir, "decorator.ts"), extCode);
+
+			const result = await discoverAndLoadExtensions([], tempDir, tempDir);
+			const runner = new ExtensionRunner(result.extensions, result.runtime, tempDir, sessionManager, modelRegistry);
+
+			expect(runner.getMessageDecorators()).toHaveLength(1);
+		});
 	});
 
 	describe("flags", () => {
